@@ -1,0 +1,3 @@
+2024-07-01T16:42:23.431+07:00  INFO 7836 --- [campaignms] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-01T16:42:23.434+07:00  INFO 7836 --- [campaignms] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-07-01T16:42:23.439+07:00  INFO 7836 --- [campaignms] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
