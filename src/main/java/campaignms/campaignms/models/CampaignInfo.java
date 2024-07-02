@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,11 @@ public class CampaignInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long campaignId;
+
+    @NotBlank(message = "Campaign name is mandatory")
     private String campaignName;
+
+    @NotBlank(message = "Campaign content is mandatory")
     private String campaignContent;
     
     @CreationTimestamp

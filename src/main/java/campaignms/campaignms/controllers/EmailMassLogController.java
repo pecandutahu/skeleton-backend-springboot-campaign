@@ -1,11 +1,12 @@
 package campaignms.campaignms.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import campaignms.campaignms.models.EmailMassLog;
 import campaignms.campaignms.services.EmailMassLogService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/email-mass-log")
+@Validated
 public class EmailMassLogController {
     @Autowired
     private EmailMassLogService emailMassLogService;
@@ -31,18 +34,21 @@ public class EmailMassLogController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmailMassLog> getEmailMassLog(@PathVariable("id") Long id) {
-        return emailMassLogService.findById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+        Optional<EmailMassLog> emailMassLog = emailMassLogService.findById(id);
+        if (emailMassLog.isPresent()) {
+            return ResponseEntity.ok(emailMassLog.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public EmailMassLog creatEmailMassLog(@RequestBody EmailMassLog emailMassLog) {
+    public EmailMassLog creatEmailMassLog(@Valid @RequestBody EmailMassLog emailMassLog) {
         return emailMassLogService.save(emailMassLog);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmailMassLog> updateEmailLog(@PathVariable Long id, @RequestBody EmailMassLog emailDetails) {
+    public ResponseEntity<EmailMassLog> updateEmailLog(@PathVariable Long id, @Valid @RequestBody EmailMassLog emailDetails) {
         return emailMassLogService.findById(id)
                 .map(emailLog -> {
                     emailLog.setEmail(emailDetails.getEmail());

@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import campaignms.campaignms.exceptions.ResourceNotFoundException;
 import campaignms.campaignms.models.Customer;
 import campaignms.campaignms.repositories.CustomerRepository;
 import jakarta.persistence.EntityManager;
@@ -26,6 +27,10 @@ public class CustomerService {
 
     public Optional<Customer> findById(Long id) {
         entityManager.unwrap(Session.class).enableFilter("deletedCustomerFilter");
+        Optional<Customer> customer = customerRepository.findById(id);
+        if(!customer.isPresent()){
+            throw new ResourceNotFoundException("Customer not found");
+        }
         return customerRepository.findById(id);
     }
 

@@ -1,10 +1,12 @@
 package campaignms.campaignms.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import campaignms.campaignms.models.Customer;
 import campaignms.campaignms.services.CustomerService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/customers")
+@Validated
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
@@ -30,18 +34,21 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        return customerService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Optional<Customer> customer = customerService.findById(id);
+        if(customer.isPresent()){
+            return ResponseEntity.ok(customer.get());
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public Customer createCustomer(@RequestBody Customer customer) {
+    public Customer createCustomer(@Valid @RequestBody Customer customer) {
         return customerService.save(customer);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody Customer customerDetails) {
         return customerService.findById(id)
                 .map(customer -> {
                     customer.setName(customerDetails.getName());

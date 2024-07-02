@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import campaignms.campaignms.exceptions.ResourceNotFoundException;
 import campaignms.campaignms.models.CampaignInfo;
 import campaignms.campaignms.repositories.CampaignInfoRepository;
 import jakarta.persistence.EntityManager;
@@ -26,6 +27,10 @@ public class CampaignInfoService {
 
     public Optional<CampaignInfo> findById(Long id) {
         entityManager.unwrap(Session.class).enableFilter("deletedCampaignFilter");
+        Optional<CampaignInfo> campaignInfo = campaignInfoRepository.findById(id);
+        if(!campaignInfo.isPresent()) {
+            throw new ResourceNotFoundException("Campaign info not found");
+        }
         return campaignInfoRepository.findById(id);
     }
 

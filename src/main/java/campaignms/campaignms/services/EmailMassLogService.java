@@ -3,10 +3,13 @@ package campaignms.campaignms.services;
 import java.util.List;
 import java.util.Optional;
 
+import javax.naming.NameNotFoundException;
+
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import campaignms.campaignms.exceptions.ResourceNotFoundException;
 import campaignms.campaignms.models.EmailMassLog;
 import campaignms.campaignms.repositories.EmailMassLogRepository;
 import jakarta.persistence.EntityManager;
@@ -26,7 +29,11 @@ public class EmailMassLogService {
 
     public Optional<EmailMassLog> findById(Long id) {
         entityManager.unwrap(Session.class).enableFilter("deletedEmailLogFilter");
-        return emailMassLogRepository.findById(id);
+        Optional<EmailMassLog> emailMassLog = emailMassLogRepository.findById(id);
+        if (!emailMassLog.isPresent()) {
+            throw new ResourceNotFoundException("Email Mass Log not found for id: " + id);
+        }
+        return emailMassLog;
     }
 
     public EmailMassLog save(EmailMassLog emailMassLog) {
