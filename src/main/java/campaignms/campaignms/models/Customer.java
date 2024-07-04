@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 
-@FilterDef(name = "deletedCustomerFilter", defaultCondition = "isDeleted = false")
+@FilterDef(name = "deletedCustomerFilter", defaultCondition = "is_deleted = false")
 @Filter(name = "deletedCustomerFilter")
 public class Customer implements Serializable{
     @Id
