@@ -45,7 +45,7 @@ public class CampaignInfoController {
         return campaignInfoService.findById(id)
                 .map(campaign -> {
                     campaign.setCampaignName(campaignDetails.getCampaignName());
-                    campaign.setCampaignContent(campaignDetails.getCampaignName());
+                    campaign.setCampaignContent(campaignDetails.getCampaignContent());
                     return ResponseEntity.ok(campaignInfoService.save(campaign));
                 })
                 .orElse(ResponseEntity.notFound().build());
