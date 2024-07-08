@@ -3,11 +3,10 @@ package campaignms.campaignms.services;
 import java.util.List;
 import java.util.Optional;
 
-import javax.naming.NameNotFoundException;
-
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import campaignms.campaignms.exceptions.ResourceNotFoundException;
 import campaignms.campaignms.models.EmailMassLog;
@@ -46,5 +45,11 @@ public class EmailMassLogService {
             emailMassLogRepository.save(emailLog);
         });
     }
+
+    @Transactional
+    public void saveAll(List<EmailMassLog> emailMassLogs) {
+        emailMassLogRepository.saveAll(emailMassLogs);
+    }
+
     
 }

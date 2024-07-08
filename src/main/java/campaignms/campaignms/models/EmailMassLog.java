@@ -30,8 +30,6 @@ public class EmailMassLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long emailMasLogId;
 
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email is mandatory")
     private String email;
 
     @NotBlank(message = "Subject is mandatory")
