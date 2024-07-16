@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import campaignms.campaignms.models.EmailMassLog;
+import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.EmailMassLogService;
 import jakarta.validation.Valid;
 
@@ -28,12 +29,12 @@ public class EmailMassLogController {
     private EmailMassLogService emailMassLogService;
 
     @GetMapping
-    public List<EmailMassLog> getEmailMassLogs() {
+    public List<EmailMassLog> getEmailMassLogs(User user) {
         return emailMassLogService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmailMassLog> getEmailMassLog(@PathVariable("id") Long id) {
+    public ResponseEntity<EmailMassLog> getEmailMassLog(User user, @PathVariable("id") Long id) {
         Optional<EmailMassLog> emailMassLog = emailMassLogService.findById(id);
         if (emailMassLog.isPresent()) {
             return ResponseEntity.ok(emailMassLog.get());
@@ -43,12 +44,12 @@ public class EmailMassLogController {
     }
 
     @PostMapping
-    public EmailMassLog creatEmailMassLog(@Valid @RequestBody EmailMassLog emailMassLog) {
+    public EmailMassLog creatEmailMassLog(User user, @Valid @RequestBody EmailMassLog emailMassLog) {
         return emailMassLogService.save(emailMassLog);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmailMassLog> updateEmailLog(@PathVariable Long id, @Valid @RequestBody EmailMassLog emailDetails) {
+    public ResponseEntity<EmailMassLog> updateEmailLog(User user, @PathVariable Long id, @Valid @RequestBody EmailMassLog emailDetails) {
         return emailMassLogService.findById(id)
                 .map(emailLog -> {
                     emailLog.setEmail(emailDetails.getEmail());
@@ -60,7 +61,7 @@ public class EmailMassLogController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmailLog(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteEmailLog(User user, @PathVariable Long id) {
         return emailMassLogService.findById(id)
                 .map(emailLog -> {
                     emailMassLogService.deleteById(id);

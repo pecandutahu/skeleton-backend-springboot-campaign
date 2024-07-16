@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import campaignms.campaignms.models.CampaignInfo;
+import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.CampaignInfoService;
 import jakarta.validation.Valid;
 
@@ -21,12 +22,12 @@ public class CampaignInfoController {
     private CampaignInfoService campaignInfoService;
 
     @GetMapping
-    public List<CampaignInfo> getAllCampaigns() {
+    public List<CampaignInfo> getAllCampaigns(User user) {
         return campaignInfoService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CampaignInfo> getCampaignById(@PathVariable Long id) {
+    public ResponseEntity<CampaignInfo> getCampaignById(User user, @PathVariable Long id) {
         Optional<CampaignInfo> campaignInfo = campaignInfoService.findById(id);
         if(campaignInfo.isPresent()) {
             return ResponseEntity.ok(campaignInfo.get());
@@ -36,12 +37,12 @@ public class CampaignInfoController {
     }
 
     @PostMapping
-    public CampaignInfo createCampaign(@Valid @RequestBody CampaignInfo campaignInfo) {
+    public CampaignInfo createCampaign(User user, @Valid @RequestBody CampaignInfo campaignInfo) {
         return campaignInfoService.save(campaignInfo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CampaignInfo> updateCampaign(@PathVariable Long id, @Valid @RequestBody CampaignInfo campaignDetails) {
+    public ResponseEntity<CampaignInfo> updateCampaign(User user, @PathVariable Long id, @Valid @RequestBody CampaignInfo campaignDetails) {
         return campaignInfoService.findById(id)
                 .map(campaign -> {
                     campaign.setCampaignName(campaignDetails.getCampaignName());
@@ -52,7 +53,7 @@ public class CampaignInfoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCampaign(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCampaign(User user, @PathVariable Long id) {
         return campaignInfoService.findById(id)
                 .map(campaign -> {
                     campaignInfoService.deleteById(id);

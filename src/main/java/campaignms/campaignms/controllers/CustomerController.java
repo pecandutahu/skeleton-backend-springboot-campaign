@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import campaignms.campaignms.models.Customer;
+import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.CustomerService;
 import jakarta.validation.Valid;
 
@@ -28,12 +29,12 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
+    public List<Customer> getAllCustomers(User user) {
         return customerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<Customer> getCustomerById(User user, @PathVariable Long id) {
         Optional<Customer> customer = customerService.findById(id);
         if(customer.isPresent()){
             return ResponseEntity.ok(customer.get());
@@ -43,12 +44,12 @@ public class CustomerController {
     }
 
     @PostMapping
-    public Customer createCustomer(@Valid @RequestBody Customer customer) {
+    public Customer createCustomer(User user, @Valid @RequestBody Customer customer) {
         return customerService.save(customer);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody Customer customerDetails) {
+    public ResponseEntity<Customer> updateCustomer(User user, @PathVariable Long id, @Valid @RequestBody Customer customerDetails) {
         return customerService.findById(id)
                 .map(customer -> {
                     customer.setName(customerDetails.getName());
@@ -59,7 +60,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomer(User user, @PathVariable Long id) {
         return customerService.findById(id)
                 .map(customer -> {
                     customerService.deleteById(id);
