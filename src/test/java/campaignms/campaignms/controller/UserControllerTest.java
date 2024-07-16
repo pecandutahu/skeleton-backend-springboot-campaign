@@ -15,8 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import campaignms.campaignms.models.RegisterUserRequest;
-import campaignms.campaignms.models.WebResponse;
+import campaignms.campaignms.dto.RegisterUserRequest;
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.repositories.UserRepository;
 
 @SpringBootTest

@@ -12,10 +12,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import campaignms.campaignms.models.LoginUserRequest;
+import campaignms.campaignms.dto.LoginUserRequest;
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.TokenResponse;
 import campaignms.campaignms.models.User;
-import campaignms.campaignms.models.WebResponse;
 import campaignms.campaignms.repositories.UserRepository;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 

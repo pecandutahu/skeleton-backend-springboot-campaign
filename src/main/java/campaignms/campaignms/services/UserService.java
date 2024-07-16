@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import campaignms.campaignms.dto.RegisterUserRequest;
 import campaignms.campaignms.exceptions.ResourceNotFoundException;
-import campaignms.campaignms.models.RegisterUserRequest;
 import campaignms.campaignms.models.User;
 import campaignms.campaignms.repositories.UserRepository;
 import campaignms.campaignms.security.BCrypt;

@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import campaignms.campaignms.models.RegisterUserRequest;
+import campaignms.campaignms.dto.RegisterUserRequest;
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.User;
-import campaignms.campaignms.models.WebResponse;
 import campaignms.campaignms.services.UserService;
 import jakarta.validation.Valid;
 

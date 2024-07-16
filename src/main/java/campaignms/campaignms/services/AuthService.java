@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import campaignms.campaignms.models.LoginUserRequest;
+import campaignms.campaignms.dto.LoginUserRequest;
 import campaignms.campaignms.models.TokenResponse;
 import campaignms.campaignms.models.User;
 import campaignms.campaignms.repositories.UserRepository;

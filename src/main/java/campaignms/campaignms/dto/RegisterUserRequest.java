@@ -1,4 +1,4 @@
-package campaignms.campaignms.models;
+package campaignms.campaignms.dto;
 
 
 import jakarta.persistence.Column;
