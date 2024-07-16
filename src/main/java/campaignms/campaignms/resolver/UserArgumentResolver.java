@@ -29,13 +29,13 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver{
         HttpServletRequest servletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         String token = servletRequest.getHeader("X-API-TOKEN");
         if(token == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "null");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is required!");
         }
         User user = userRepository.findByToken(token)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "token not in user"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token not valid! Please relogin."));
         
         if (user.getTokenExpiredAt() < System.currentTimeMillis()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "expired");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token expired, please relogin.");
         }
 
         return user;

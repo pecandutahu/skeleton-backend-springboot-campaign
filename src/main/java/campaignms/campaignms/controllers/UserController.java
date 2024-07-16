@@ -1,5 +1,7 @@
 package campaignms.campaignms.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import campaignms.campaignms.dto.RegisterUserRequest;
+import campaignms.campaignms.dto.UserResponse;
 import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.UserService;
@@ -28,7 +31,6 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-
     public WebResponse<String> register(@Valid @RequestBody RegisterUserRequest request) {
         userService.register(request);
         return WebResponse.<String>builder().data("OK").build();
@@ -41,5 +43,10 @@ public class UserController {
     public WebResponse<User> get(User user) {
         User userResponse = userService.get(user);
         return WebResponse.<User>builder().data(userResponse).build();
+    }
+
+    @GetMapping("users")
+    public List<UserResponse> getAllUsers( User user) {
+        return userService.findAll();
     }
 } 

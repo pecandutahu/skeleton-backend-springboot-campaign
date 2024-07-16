@@ -61,10 +61,9 @@ public class AuthControllerTest {
 
     @Test
     void loginSuccess() throws Exception {
-        
         LoginUserRequest request = new LoginUserRequest();
         request.setUsername("test");
-        request.setPassword("test");
+        request.setPassword("rahasia");
 
         mockMvc.perform(
             post("/api/auth/login")

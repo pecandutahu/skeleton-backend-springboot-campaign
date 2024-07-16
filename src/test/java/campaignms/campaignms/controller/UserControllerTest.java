@@ -17,7 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import campaignms.campaignms.dto.RegisterUserRequest;
 import campaignms.campaignms.dto.WebResponse;
+import campaignms.campaignms.models.User;
 import campaignms.campaignms.repositories.UserRepository;
+import campaignms.campaignms.security.BCrypt;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,18 +32,20 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
     private UserRepository userRepository;
     @BeforeEach
     void setUp() {
-        // userRepository.deleteAllInBatch();
+        userRepository.deleteAll();
     }
 
+    @Transactional
     @Test
     void testRegisterSuccess() throws Exception {
         RegisterUserRequest request = new RegisterUserRequest();
         request.setUsername("test");
         request.setPassword("rahasia");
-        request.setName("Test aja");
+        request.setName("Test dari unit test");
         mockMvc.perform(
             post("/api/users")
                 .accept(MediaType.APPLICATION_JSON)
@@ -79,9 +84,17 @@ class UserControllerTest {
     @Test
     void testRegisterDuplicate() throws Exception {
         RegisterUserRequest request = new RegisterUserRequest();
+
+        User user = new User();
+        user.setUsername("test");
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
+        user.setName("test");
+        userRepository.save(user);
+
+
         request.setUsername("test");
         request.setPassword("rahasia");
-        request.setName("dede");
+        request.setName("test");
         mockMvc.perform(
             post("/api/users")
                 .accept(MediaType.APPLICATION_JSON)

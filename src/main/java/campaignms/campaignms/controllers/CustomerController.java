@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.Customer;
 import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.CustomerService;
@@ -29,44 +31,39 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public List<Customer> getAllCustomers(User user) {
-        return customerService.findAll();
+    public WebResponse<List<Customer>> getAllCustomers(User user) {
+        return WebResponse.<List<Customer>>builder().data(customerService.findAll()).messages("success").build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(User user, @PathVariable Long id) {
+    public WebResponse<Customer> getCustomerById(User user, @PathVariable Long id) {
         Optional<Customer> customer = customerService.findById(id);
-        if(customer.isPresent()){
-            return ResponseEntity.ok(customer.get());
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+        return WebResponse.<Customer>builder().data(customer.get()).messages("success").build();
     }
 
     @PostMapping
-    public Customer createCustomer(User user, @Valid @RequestBody Customer customer) {
-        return customerService.save(customer);
+    public WebResponse<Customer> createCustomer(User user, @Valid @RequestBody Customer customer) {
+        return WebResponse.<Customer>builder().data(customer).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(User user, @PathVariable Long id, @Valid @RequestBody Customer customerDetails) {
-        return customerService.findById(id)
-                .map(customer -> {
-                    customer.setName(customerDetails.getName());
-                    customer.setEmail(customerDetails.getEmail());
-                    return ResponseEntity.ok(customerService.save(customer));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public WebResponse<Customer> updateCustomer(User user, @PathVariable Long id, @Valid @RequestBody Customer customerDetails) {
+        Optional<Customer> customer = customerService.findById(id);
+        customer.get().setName(customerDetails.getName());
+        customer.get().setEmail(customerDetails.getEmail());
+        customerService.save(customer.get());
+        return WebResponse.<Customer>builder().data(customer.get()).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(User user, @PathVariable Long id) {
-        return customerService.findById(id)
-                .map(customer -> {
-                    customerService.deleteById(id);
-                    return new ResponseEntity<Void>(HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+    public WebResponse<Customer> deleteCustomer(User user, @PathVariable Long id) {
+        Customer customer = customerService.findById(id)
+                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data Not Found"));
+        customerService.deleteById(id);
+        return WebResponse.<Customer>builder()
+                .data(customer)
+                .messages("Data deleted successfully")
+                .build();
     }
 
 
