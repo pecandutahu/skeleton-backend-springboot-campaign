@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.CampaignInfo;
 import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.CampaignInfoService;
@@ -22,34 +23,26 @@ public class CampaignInfoController {
     private CampaignInfoService campaignInfoService;
 
     @GetMapping
-    public List<CampaignInfo> getAllCampaigns(User user) {
-        return campaignInfoService.findAll();
+    public WebResponse<List<CampaignInfo>> getAllCampaigns(User user) {
+        return WebResponse.<List<CampaignInfo>>builder().data(campaignInfoService.findAll()).messages("success").build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CampaignInfo> getCampaignById(User user, @PathVariable Long id) {
-        Optional<CampaignInfo> campaignInfo = campaignInfoService.findById(id);
-        if(campaignInfo.isPresent()) {
-            return ResponseEntity.ok(campaignInfo.get());
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+    public WebResponse<Optional<CampaignInfo>> getCampaignById(User user, @PathVariable Long id) {
+        return WebResponse.<Optional<CampaignInfo>>builder().data(campaignInfoService.findById(id)).messages("success").build();
     }
 
     @PostMapping
-    public CampaignInfo createCampaign(User user, @Valid @RequestBody CampaignInfo campaignInfo) {
-        return campaignInfoService.save(campaignInfo);
+    public WebResponse<CampaignInfo> createCampaign(User user, @Valid @RequestBody CampaignInfo campaignInfo) {
+        return WebResponse.<CampaignInfo>builder().data(campaignInfoService.save(campaignInfo)).messages("success").build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CampaignInfo> updateCampaign(User user, @PathVariable Long id, @Valid @RequestBody CampaignInfo campaignDetails) {
-        return campaignInfoService.findById(id)
-                .map(campaign -> {
-                    campaign.setCampaignName(campaignDetails.getCampaignName());
-                    campaign.setCampaignContent(campaignDetails.getCampaignContent());
-                    return ResponseEntity.ok(campaignInfoService.save(campaign));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public WebResponse<CampaignInfo> updateCampaign(User user, @PathVariable Long id, @Valid @RequestBody CampaignInfo campaignDetails) {
+        Optional<CampaignInfo> campaign = campaignInfoService.findById(id);
+        campaign.get().setCampaignName(campaignDetails.getCampaignName());
+        campaign.get().setCampaignContent(campaignDetails.getCampaignContent());
+        return WebResponse.<CampaignInfo>builder().data(campaignInfoService.save(campaign.get())).messages("success").build();
     }
 
     @DeleteMapping("/{id}")
