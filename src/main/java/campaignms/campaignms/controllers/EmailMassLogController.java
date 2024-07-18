@@ -21,7 +21,6 @@ import campaignms.campaignms.models.EmailMassLog;
 import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.EmailMassLogService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 
 @RestController
 @RequestMapping("/api/email-mass-log")
