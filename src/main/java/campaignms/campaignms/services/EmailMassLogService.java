@@ -5,10 +5,11 @@ import java.util.Optional;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import campaignms.campaignms.exceptions.ResourceNotFoundException;
 import campaignms.campaignms.models.EmailMassLog;
 import campaignms.campaignms.repositories.EmailMassLogRepository;
 import jakarta.persistence.EntityManager;
@@ -30,7 +31,7 @@ public class EmailMassLogService {
         entityManager.unwrap(Session.class).enableFilter("deletedEmailLogFilter");
         Optional<EmailMassLog> emailMassLog = emailMassLogRepository.findById(id);
         if (!emailMassLog.isPresent()) {
-            throw new ResourceNotFoundException("Email Mass Log not found for id: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email Mass Log not found for id: " + id);
         }
         return emailMassLog;
     }
