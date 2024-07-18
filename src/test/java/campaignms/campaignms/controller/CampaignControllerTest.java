@@ -3,6 +3,8 @@ package campaignms.campaignms.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -11,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +32,7 @@ import campaignms.campaignms.models.User;
 import campaignms.campaignms.repositories.CampaignInfoRepository;
 import campaignms.campaignms.repositories.UserRepository;
 import campaignms.campaignms.security.BCrypt;
+import campaignms.campaignms.services.CampaignInfoService;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -46,6 +50,9 @@ public class CampaignControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private CampaignInfoService campaignInfoService;
 
     @BeforeEach
     void setUp() {
@@ -549,6 +556,74 @@ public class CampaignControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
+                .header("X-API-TOKEN", "test")
+        ).andExpectAll(
+            status().isNotFound()
+        ).andDo( result -> {
+            WebResponse<Map<String, Object>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNotNull(response.getErrors());
+            assertNotNull(response.getMessages());
+            assertNull(response.getData());
+            
+        });
+            
+    }
+
+    /* Test Case Delete Campaign */
+    @Transactional
+    @Test
+    void testDeleteCampaignSuccess() throws Exception {
+        User user = new User();
+        user.setUsername("test");
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
+        user.setName("test");
+        user.setToken("test");
+        user.setTokenExpiredAt(System.currentTimeMillis() + 10000000000000L);
+        userRepository.save(user);
+
+        CampaignInfo campaignInfo = new CampaignInfo();
+        campaignInfo.setCampaignName("Test Campaign");
+        campaignInfo.setCampaignContent("Test Content");
+        campaignInfoRepository.save(campaignInfo);
+        Long campaignId = campaignInfo.getCampaignId();
+
+
+        mockMvc.perform(
+            delete("/api/campaigns/" + campaignId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-API-TOKEN", "test")
+        ).andExpectAll(
+            status().isOk()
+        ).andDo( result -> {
+            WebResponse<Map<String, Object>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+            assertNotNull(response.getMessages());
+            assertNotNull(response.getData());
+
+            Map<String, Object> responseData = (Map<String, Object>) response.getData();
+            assertTrue((Boolean) responseData.get("deleted"));
+            
+        });
+            
+    }
+    @Transactional
+    @Test
+    void testDeleteCampaignNotFound() throws Exception {
+        User user = new User();
+        user.setUsername("test");
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
+        user.setName("test");
+        user.setToken("test");
+        user.setTokenExpiredAt(System.currentTimeMillis() + 10000000000000L);
+        userRepository.save(user);
+
+        mockMvc.perform(
+            delete("/api/campaigns/0")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .header("X-API-TOKEN", "test")
         ).andExpectAll(
             status().isNotFound()

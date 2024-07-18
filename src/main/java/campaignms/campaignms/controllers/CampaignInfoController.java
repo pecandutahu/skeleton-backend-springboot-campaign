@@ -2,9 +2,9 @@ package campaignms.campaignms.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.CampaignInfo;
@@ -46,12 +46,12 @@ public class CampaignInfoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCampaign(User user, @PathVariable Long id) {
-        return campaignInfoService.findById(id)
-                .map(campaign -> {
-                    campaignInfoService.deleteById(id);
-                    return new ResponseEntity<Void>(HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+    public WebResponse<CampaignInfo> deleteCampaign(User user, @PathVariable Long id) {
+        CampaignInfo campaignInfo = campaignInfoService.findById(id)
+        .orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data not Found"));
+        campaignInfoService.deleteById(id);
+
+        return WebResponse.<CampaignInfo>builder().data(campaignInfo).messages("Data deleted successfully").build();
     }
 }
