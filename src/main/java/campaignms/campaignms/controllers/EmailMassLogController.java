@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.EmailMassLog;
+import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.EmailMassLogService;
 import jakarta.validation.Valid;
 
@@ -28,45 +30,36 @@ public class EmailMassLogController {
     private EmailMassLogService emailMassLogService;
 
     @GetMapping
-    public List<EmailMassLog> getEmailMassLogs() {
-        return emailMassLogService.findAll();
+    public WebResponse<List<EmailMassLog>> getEmailMassLogs(User user) {
+        return WebResponse.<List<EmailMassLog>>builder().data(emailMassLogService.findAll()).messages("success").build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmailMassLog> getEmailMassLog(@PathVariable("id") Long id) {
+    public WebResponse<Optional<EmailMassLog>> getEmailMassLog(User user, @PathVariable("id") Long id) {
         Optional<EmailMassLog> emailMassLog = emailMassLogService.findById(id);
-        if (emailMassLog.isPresent()) {
-            return ResponseEntity.ok(emailMassLog.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return WebResponse.<Optional<EmailMassLog>>builder().data(emailMassLog).messages("success").build();
     }
 
     @PostMapping
-    public EmailMassLog creatEmailMassLog(@Valid @RequestBody EmailMassLog emailMassLog) {
-        return emailMassLogService.save(emailMassLog);
+    public WebResponse<EmailMassLog> creatEmailMassLog(User user, @Valid @RequestBody EmailMassLog emailMassLog) {
+        return WebResponse.<EmailMassLog>builder().data(emailMassLogService.save(emailMassLog)).messages("success").build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmailMassLog> updateEmailLog(@PathVariable Long id, @Valid @RequestBody EmailMassLog emailDetails) {
-        return emailMassLogService.findById(id)
-                .map(emailLog -> {
-                    emailLog.setEmail(emailDetails.getEmail());
-                    emailLog.setSubject(emailDetails.getSubject());
-                    emailLog.setContent(emailDetails.getContent());
-                    return ResponseEntity.ok(emailMassLogService.save(emailLog));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public WebResponse<EmailMassLog> updateEmailLog(User user, @PathVariable Long id, @Valid @RequestBody EmailMassLog emailDetails) {
+        Optional<EmailMassLog> emailMassLog = emailMassLogService.findById(id);
+        emailMassLog.get().setEmail(emailDetails.getEmail());
+        emailMassLog.get().setSubject(emailDetails.getSubject());
+        emailMassLog.get().setContent(emailDetails.getContent());
+
+        return WebResponse.<EmailMassLog>builder().data(emailMassLogService.save(emailMassLog.get())).messages("succsess").build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmailLog(@PathVariable Long id) {
-        return emailMassLogService.findById(id)
-                .map(emailLog -> {
-                    emailMassLogService.deleteById(id);
-                    return new ResponseEntity<Void>(HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+    public WebResponse<EmailMassLog> deleteEmailLog(User user, @PathVariable Long id) {
+        Optional<EmailMassLog> emailMasLog = emailMassLogService.findById(id);
+        emailMassLogService.deleteById(id);
+        return WebResponse.<EmailMassLog>builder().data(emailMasLog.get()).messages("Data deleted successfully").build();
     }
     
 }

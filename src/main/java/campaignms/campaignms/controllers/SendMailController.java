@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import campaignms.campaignms.dto.WebResponse;
 import campaignms.campaignms.models.Customer;
 import campaignms.campaignms.models.EmailMassLog;
+import campaignms.campaignms.models.User;
 import campaignms.campaignms.services.CustomerService;
 import campaignms.campaignms.services.EmailMassLogService;
 import jakarta.validation.Valid;
@@ -28,7 +30,7 @@ public class SendMailController {
     private CustomerService customerService;
 
     @PostMapping("/all")
-    public ResponseEntity<String> sendMailToAll(@Valid @RequestBody EmailMassLog emailMassLogReq) {
+    public WebResponse<Object> sendMailToAll(User user, @Valid @RequestBody EmailMassLog emailMassLogReq) {
         List<Customer> customers = customerService.findAll();
 
         List<EmailMassLog> emailMassLogs = customers.stream()
@@ -43,7 +45,6 @@ public class SendMailController {
         .collect(Collectors.toList());
         
         emailMassLogService.saveAll(emailMassLogs);
-
-        return ResponseEntity.ok("Email sent successfully to " + customers.size() + " customers");
+        return WebResponse.<Object>builder().data(emailMassLogs).messages("Email sent successfully to " + customers.size() + " customers").build();
     }
 }
