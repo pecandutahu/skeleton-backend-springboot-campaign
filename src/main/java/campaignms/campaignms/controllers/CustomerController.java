@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +42,7 @@ public class CustomerController {
 
     @PostMapping
     public WebResponse<Customer> createCustomer(User user, @Valid @RequestBody Customer customer) {
-        return WebResponse.<Customer>builder().data(customer).build();
+        return WebResponse.<Customer>builder().data(customerService.save(customer)).messages("success").build();
     }
 
     @PutMapping("/{id}")
