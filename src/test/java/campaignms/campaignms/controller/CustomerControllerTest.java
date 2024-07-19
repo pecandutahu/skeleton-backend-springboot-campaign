@@ -81,6 +81,7 @@ public class CustomerControllerTest {
                 });
                 
                 assertNull(response.getErrors());
+                assertNotNull(response.getMessages());
                 Map<String,Object> fieldErrors = (Map<String, Object>) response.getFieldErrors();
                 assertNull(fieldErrors);
 
