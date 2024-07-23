@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,11 +17,24 @@ import jakarta.persistence.EntityManager;
 
 @Service
 public class CustomerService {
+
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private ChannelTopic topic;
+
     @Autowired
     private EntityManager entityManager;
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    public void addCustomerToQueue(Customer customer, String subject, String content) {
+        String message = customer.getEmail() + "|" + subject + "|" + content;
+        redisTemplate.convertAndSend(topic.getTopic(), message);
+    }
 
     public List<Customer> findAll() {
         entityManager.unwrap(Session.class).enableFilter("deletedCustomerFilter");

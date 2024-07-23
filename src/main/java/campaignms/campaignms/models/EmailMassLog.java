@@ -7,6 +7,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Builder.Default;
 
 @Entity
 @NoArgsConstructor
@@ -44,4 +46,7 @@ public class EmailMassLog {
     private LocalDateTime updatedAt;
 
     private boolean isDeleted = false;
+
+    @Nullable
+    private String status;
 }
