@@ -1,14 +1,20 @@
 package campaignms.campaignms.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import campaignms.campaignms.models.EmailMassLog;
+import jakarta.mail.internet.MimeMessage;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import campaignms.campaignms.models.Customer;
 
 @Service
 public class EmailService {
@@ -19,35 +25,53 @@ public class EmailService {
     @Autowired
     private EmailMassLogService emailMassLogService;
     
-    
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    public void sendEmail(String to, String subject, String body) {
-        
+    @Value("${mail.reply-to}")
+    private String replyTo;
 
+    @Value("${mail.from}")
+    private String from;
+
+    public void sendEmail(String to, String subject, String body) {
         EmailMassLog log = new EmailMassLog();
         log.setEmail(to);
         log.setSubject(subject);
         log.setContent(body);
         emailMassLogService.save(log);
+    
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper;
+        
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        // Decode the HTML body
+        String decodedBody;
         try {
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
+            // decodedBody = URLDecoder.decode(body, StandardCharsets.UTF_8.name());
+            decodedBody = java.net.URLDecoder.decode(body, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            // Handle error or set a default value
+            decodedBody = body; // Default to the original body if decoding fails
+        }
+        try {
+            helper = new MimeMessageHelper(message, true,"UTF-8"); // second parameter indicates multipart message
+            helper.setFrom(from); // use the from value from properties file
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(decodedBody, true); // second parameter indicates HTML format
+            helper.setReplyTo(replyTo);
             javaMailSender.send(message);
 
+    
             logger.info("Email sent successfully to: {}", to);
             log.setStatus("SUCCESS");
         } catch (Exception e) {
             logger.error("Failed to send email to: {}", to, e);
             log.setStatus("FAILED");
-
         }
-
+    
         emailMassLogService.save(log);
-
     }
 
     // Pastikan metode ini public dan menerima parameter yang tepat

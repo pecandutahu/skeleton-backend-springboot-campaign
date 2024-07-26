@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import campaignms.campaignms.services.EmailService;
+import campaignms.campaignms.services.JakartaEmailService;
 
 @Configuration
 public class RedisConfig {
@@ -54,4 +55,9 @@ public class RedisConfig {
     public MessageListenerAdapter messageListener(EmailService emailService) {
         return new MessageListenerAdapter(emailService, "onMessage");
     }
+
+    // @Bean
+    // public MessageListenerAdapter messageListener(JakartaEmailService emailService) {
+    //     return new MessageListenerAdapter(emailService, "onMessage");
+    // }
 }

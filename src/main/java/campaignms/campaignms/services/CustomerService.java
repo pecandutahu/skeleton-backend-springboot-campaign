@@ -61,5 +61,9 @@ public class CustomerService {
             customer.setDeleted(true);
             customerRepository.save(customer);
     }
+    public List<Customer> findAllCustomersWithFailedEmails() {
+        // Implement the logic to fetch customers with failed email statuses
+        return customerRepository.findCustomersWithFailedEmails();
+    }
     
 }

@@ -7,10 +7,12 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -36,6 +38,8 @@ public class CampaignInfo {
     private String campaignName;
 
     @NotBlank(message = "Campaign content is mandatory")
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String campaignContent;
     
     @CreationTimestamp

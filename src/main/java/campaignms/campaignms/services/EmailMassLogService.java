@@ -5,6 +5,11 @@ import java.util.Optional;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import campaignms.campaignms.models.EmailMassLog;
 import campaignms.campaignms.repositories.EmailMassLogRepository;
+import campaignms.campaignms.spesifications.EmailMassLogSpecification;
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -21,6 +27,27 @@ public class EmailMassLogService {
 
     @Autowired
     private EmailMassLogRepository emailMassLogRepository;
+
+    public Page<EmailMassLog> findAllWithFilterAndSort(String sortBy, String sortDirection, String filterColumn, String filterValue, int page, int limit) {
+        entityManager.unwrap(Session.class).enableFilter("deletedEmailLogFilter");
+
+        Specification<EmailMassLog> specification = Specification.where(null);
+
+        if (filterColumn != null && !filterColumn.isEmpty() && filterValue != null && !filterValue.isEmpty()) {
+            specification = specification.and(EmailMassLogSpecification.containsColumn(filterColumn, filterValue));
+        }
+        if(sortBy != null && sortDirection != null) {
+            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+            Pageable pageable = PageRequest.of(page, limit, sort);
+            return emailMassLogRepository.findAll(specification, pageable);
+        }else{
+            Pageable pageable = PageRequest.of(page, limit);
+            return emailMassLogRepository.findAll(specification, pageable);
+        }
+
+
+
+    }
 
     public List<EmailMassLog> findAll() {
         entityManager.unwrap(Session.class).enableFilter("deletedEmailLogFilter");
