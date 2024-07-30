@@ -27,7 +27,7 @@ public class SendMailController {
 
     @PostMapping("/all")
     public WebResponse<Object> sendMailToAll(User user, @Valid @RequestBody EmailMassLog emailMassLogReq) {
-        List<Customer> customers = customerService.findAllCustomersWithFailedEmails();
+        List<Customer> customers = customerService.findAll();
 
         for (Customer customer : customers) {
             customerService.addCustomerToQueue(customer, emailMassLogReq.getSubject(), emailMassLogReq.getContent());
